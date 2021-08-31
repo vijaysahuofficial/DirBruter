@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+import argparse
+import os.path
+import requests
+import queue
+from fake_useragent import UserAgent
+from resources.banner import credits
+from colorama import init, Fore
+import threading, sys
+import time
+init()
+credits()
+ua = UserAgent()
+user_agent = ua.random
+
+def main():
+    parser = argparse.ArgumentParser('DirBruter')
+    parser.add_argument('-t', dest='threads', type=int, help='Threads (default = 1)', metavar='THREADS', default=1)
+    parser.add_argument('-u', dest='url', type=str, help='Target URL', metavar='URL', required=True)
+    parser.add_argument('-w', dest='wordlist', help="Path to wordlist",metavar='WORDLIST', required=True, type=lambda x:valid_wordlist(parser,x))
+    args = parser.parse_args()
+    print("\n\n"+Fore.RED + "Entered Url = {}".format(args.url))
+    for i in range(args.threads):
+        t = threading.Thread(target=dirBruter, args=(args,))
+        t.daemon = True
+        t.start()
+        try:
+            while True:
+                t.join(1)
+                if not t.is_alive():
+                    break
+                time.sleep(2)
+        except KeyboardInterrupt:
+            print("Exiting...")
+            sys.exit(1)
+
+def valid_wordlist(parser,args):
+    if not os.path.exists(args):
+        parser.error("The file {} does not exists!!".format(args))
+    else:
+        print("Wordlist added successfully")
+        wordlistFile = open(args,'r')
+        return wordlistFile      
+
+def dirBruter(args, extensions=None):
+    url = args.url
+    wordlist = args.wordlist
+    words = queue.Queue()
+    for word in wordlist:
+        word = word.rstrip()
+        words.put(word) 
+    found_url = []
+    while not words.empty():
+        attempt = words.get()
+        attempt_list = []
+        if "." not in attempt:
+            attempt_list.append("/{}/".format(attempt))
+        else:
+            attempt_list.append("/{}".format(attempt))
+        if extensions:
+            for extension in extensions:
+                attempt_list.append("/{}{}".format(attempt, extension))
+        for brute in attempt_list:
+            try:
+                target_url = "{}{}".format(url, brute)
+                headers = {"User-Agent": user_agent}
+                response = requests.get(target_url, headers=headers)
+                if response.status_code == 200:
+                    found_url.append(target_url)
+                    print(Fore.GREEN+ "{} => {} | FOUND".format(response.status_code, target_url))
+                elif response.status_code == 404:
+                    print(Fore.RED + "{} => {} | NOT FOUND".format(response.status_code, target_url))
+                else:
+                    print(Fore.BLUE + "{} => {}".format(response.status_code, target_url))
+                
+            except requests.extensions.ReadTimeoutException:
+                print(Fore.RED + "Request Timeout {}".format(target_url))
+                
+if __name__ == '__main__':
+    main()
