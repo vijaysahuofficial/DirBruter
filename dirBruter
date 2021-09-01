@@ -18,7 +18,7 @@ def main():
     parser.add_argument('-t', dest='threads', type=int, help='Threads (default = 1)', metavar='THREADS', default=1)
     parser.add_argument('-u', dest='url', type=str, help='Target URL', metavar='URL', required=True)
     parser.add_argument('-w', dest='wordlist', help="Path to wordlist",metavar='WORDLIST', required=True, type=lambda x:valid_wordlist(parser,x))
-    parser.add_argument("-o", dest="output", help="save found results to a file", action="store_true")
+    parser.add_argument('-o', dest='output', help='save found results to a file', action='store_true')
     args = parser.parse_args()
     print("\n\n"+Fore.RED + "Entered Url = {}".format(args.url))
     for i in range(args.threads):
@@ -44,8 +44,8 @@ def valid_wordlist(parser,args):
         return wordlistFile      
 
 def save_found_results(target_url):
-	file = open(f"dB_output.txt","a")
-	file.write(f"{target_url}\n")
+	file = open(f'dB_output.txt','a')
+	file.write(f'{target_url}\n')
                     				
 def dirBruter(args, extensions=None):
     url = args.url
