@@ -24,12 +24,12 @@
 # Usage
 
 <h2>Linux</h2>
-<code>dirBruter -u "http://testphp.vulnweb.com" -w "wordlist"</code>
+<code>dirBruter -u "http://testphp.vulnweb.com" -w "DBwordlist.txt"</code>
 <h2>Windows</h2>
-<code>python dirBruter -u "http://testphp.vulnweb.com" -w "wordlist"</code>
+<code>python dirBruter -u "http://testphp.vulnweb.com" -w "DBwordlist.txt"</code>
 
 <p>or</p>
-<code>python3 dirBruter -u "http://testphp.vulnweb.com" -w "wordlist"</code>
+<code>python3 dirBruter -u "http://testphp.vulnweb.com" -w "DBwordlist.txt"</code>
 
 
 # Help
