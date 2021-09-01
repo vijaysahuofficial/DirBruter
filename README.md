@@ -26,4 +26,10 @@
 # Help
 <code>dirBruter -h</code>
 
+# Wordlists
+
+<ul>
+    <li><a href="https://github.com/v0re/dirb/tree/master/wordlists" target="_blank">Dirb Wordlist</a></li>
+    <li><a href="https://github.com/daviddias/node-dirbuster/tree/master/lists" target="_blank">Dirbuster Wordlist</a></li>
+</ul>
 
