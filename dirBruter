@@ -18,7 +18,8 @@ def main():
     parser.add_argument('-t', dest='threads', type=int, help='Threads (default = 1)', metavar='THREADS', default=1)
     parser.add_argument('-u', dest='url', type=str, help='Target URL', metavar='URL', required=True)
     parser.add_argument('-w', dest='wordlist', help="Path to wordlist",metavar='WORDLIST', required=True, type=lambda x:valid_wordlist(parser,x))
-    parser.add_argument('-o', dest='output', help='save found results to a file', action='store_true')
+    parser.add_argument('-o', dest='output', help='save found results to a file',action='store_true')
+    parser.add_argument('-v', dest='verbose', help='verbose output (Errors)', action='store_true')
     args = parser.parse_args()
     print("\n\n"+Fore.RED + "Entered Url = {}".format(args.url))
     for i in range(args.threads):
@@ -47,8 +48,14 @@ def save_found_results(target_url):
 	file = open(f'dB_output.txt','a')
 	file.write(f'{target_url}\n')
                     				
-def dirBruter(args, extensions=None):
-    url = args.url
+def dirBruter(args):
+    extensions=[]
+    raw_url = args.url
+    last_char = raw_url[-1]
+    if last_char == '/':
+        url = raw_url[:-1]
+    else:
+        url = raw_url
     wordlist = args.wordlist
     words = queue.Queue()
     for word in wordlist:
@@ -67,22 +74,35 @@ def dirBruter(args, extensions=None):
                 attempt_list.append("/{}{}".format(attempt, extension))
         for brute in attempt_list:
             try:
-                target_url = "{}{}".format(url, brute)
-                headers = {"User-Agent": user_agent}
-                response = requests.get(target_url, headers=headers)
-                if response.status_code == 200:
-                    if args.output:
-                    	save_found_results(target_url)
-                    found_url.append(target_url)
-                    print(Fore.GREEN+ "{} => {} | FOUND".format(response.status_code, target_url))
+                try:
+                    target_url = "{}{}".format(url, brute)
+                    headers = {"User-Agent": user_agent}
+                    response = requests.get(target_url, headers=headers, timeout=5)
+                    if response.status_code == 200:
+                        if args.output:
+                            save_found_results(target_url)
+                        found_url.append(target_url)
+                        print(Fore.GREEN+ "{} => {} | FOUND".format(response.status_code, target_url))
 
-                elif response.status_code == 404:
-                    print(Fore.RED + "{} => {} | NOT FOUND".format(response.status_code, target_url))
-                else:
-                    print(Fore.BLUE + "{} => {}".format(response.status_code, target_url))
-                
+                    elif response.status_code == 404:
+                        if args.verbose:
+                            print(Fore.RED + "{} => {} | NOT FOUND".format(response.status_code, target_url))
+                        else:
+                            pass
+                    else:
+                        if args.verbose:
+                            print(Fore.BLUE + "{} => {}".format(response.status_code, target_url))
+                        else:
+                            pass
+                except:
+                    if args.verbose:
+                        print(Fore.RED + "Not Responding ")
+
+                    else:
+                        pass
             except requests.extensions.ReadTimeoutException:
                 print(Fore.RED + "Request Timeout {}".format(target_url))
-                
+
+
 if __name__ == '__main__':
     main()
