@@ -40,9 +40,20 @@
 <code>dirBruter -h</code>
 
 # Wordlists
+ 
 
 <ul>
     <li><a href="https://github.com/v0re/dirb/tree/master/wordlists" target="_blank">Dirb Wordlist</a></li>
     <li><a href="https://github.com/daviddias/node-dirbuster/tree/master/lists" target="_blank">Dirbuster Wordlist</a></li>
 </ul>
+
+# Extensions Wordlist
+<p>If you are using default DBwordlist.txt then don't add any other extenstions.</p>
+<ul>
+    <li><a href="https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/web-extensions.txt" target="_blank">SecList</a></li>
+   
+</ul>
+
+
+
 
