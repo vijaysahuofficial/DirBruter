@@ -10,6 +10,10 @@
 
 <p>DirBruter is a Python based CLI tool. It looks for hidden or existing directories/files using brute force method. It basically works by launching a dictionary based attack against a webserver and analyse its response.</p>
 
+# Disclaimer:
+
+<p>This Tool is made for educational purpose only ! Author will not be responsible for any misuse of this toolkit !</p>
+
 # Installation
 
 <code>git clone https://github.com/vijaysahuofficial/DirBruter.git</code>
