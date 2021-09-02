@@ -13,6 +13,7 @@ credits()
 ua = UserAgent()
 user_agent = ua.random
 
+
 def main():
     parser = argparse.ArgumentParser('DirBruter')
     parser.add_argument('-t', dest='threads', type=int, help='Threads (default = 1)', metavar='THREADS', default=1)
@@ -20,10 +21,18 @@ def main():
     parser.add_argument('-w', dest='wordlist', help="Path to wordlist",metavar='WORDLIST', required=True, type=lambda x:valid_wordlist(parser,x))
     parser.add_argument('-o', dest='output', help='save found results to a file',action='store_true')
     parser.add_argument('-v', dest='verbose', help='verbose output (Errors)', action='store_true')
+    parser.add_argument('-e', dest='extensions', help='extensions(example ".php,.exe,.bak")', metavar='EXTENSIONS')
     args = parser.parse_args()
     print("\n\n"+Fore.RED + "Target Url = {}\n".format(args.url))
+    extensions = []
+    if args.extensions:
+        x = args.extensions.split(',')
+        for i in x:
+            extensions.append(i.strip())
+    else:
+        pass
     for i in range(args.threads):
-        t = threading.Thread(target=dirBruter, args=(args,))
+        t = threading.Thread(target=dirBruter, args=(args,extensions))
         t.daemon = True
         t.start()
         try:
@@ -45,11 +54,12 @@ def valid_wordlist(parser,args):
         return wordlistFile      
 
 def save_found_results(target_url):
-	file = open(f'dB_output.txt','a')
-	file.write(f'{target_url}\n')
-                    				
+    ts = time.localtime()
+    timestamp = time.strftime("%H:%M:%S",ts)
+    file = open(f'dB_output.txt','a')
+    file.write(f'[{timestamp}] : {target_url}\n')
+    
 def dirBruter(args, extensions=None):
-    extensions=[]
     raw_url = args.url
     last_char = raw_url[-1]
     if last_char == '/':
