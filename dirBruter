@@ -27,7 +27,6 @@ import sys
 import time
 import queue
 import os.path
-import logging
 import random
 import argparse
 import requests
