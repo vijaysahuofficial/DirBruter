@@ -53,7 +53,7 @@ python3 dirBruter -u "http://testphp.vulnweb.com" -w "DBwordlist.txt"
 | ``-w/--wordlist`` | wordlist |  *wordlist/path to wordlist file* |
 | ``-o/--output`` | filename |  *write found results to a file* |
 | ``-e/--extensions`` | extensions | *extensions (e.g ".php,.html,.exe")* |
-| ``-v/--verbose`` |  |  *enable verbosity (show network logs/errors)* |
+| ``-v/--verbose`` |  |  *enable verbosity* |
 
 # DISCLAIMER
 
