@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-'''
+"""
 MIT License
 
 Copyright (c) 2022 Vijay Sahu
@@ -17,12 +17,12 @@ copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import sys
 import time
 import queue
@@ -32,10 +32,12 @@ import argparse
 import requests
 import threading
 from resources.banner import banner
-from resources.useragents import userAgents
+from resources.useragents import user_agents
 from resources.colors import red, white, green, blue, yellow, reset
 
 print(banner)
+
+
 def main(args):
     extensions = []
     if args.extensions:
@@ -45,7 +47,7 @@ def main(args):
     else:
         pass
     for i in range(args.threads):
-        t = threading.Thread(target=dirBruter, args=(args,extensions))
+        t = threading.Thread(target=dirBruter, args=(args, extensions))
         t.daemon = True
         t.start()
         while True:
@@ -54,22 +56,24 @@ def main(args):
                 break
             time.sleep(2)
 
-def valid_wordlist(parser,args):
+
+def valid_wordlist(parser, args):
     if not os.path.exists(args):
-    	print(f"{white}[{red}!{white}] The file {green}{args}{white} does not exist{reset}")
+        print(f"{white}[{red}WARNING{white}] The file {green}{args}{white} does not exist{reset}")
     else:
         print(f"{white}> Wordlist: {green}{args}{reset}")
-        wordlistFile = open(args,'r')
-        return wordlistFile      
+        wordlist_file = open(args, 'r')
+        return wordlist_file
+
 
 def save_found_results(target_url):
     ts = time.localtime()
-    timestamp = time.strftime("%H:%M:%S",ts)
-    file = open(f'dB_output.txt','a')
+    timestamp = time.strftime("%H:%M:%S", ts)
+    file = open(f'dB_output.txt', 'a')
     file.write(f'[{timestamp}] : {target_url}\n')
-    
+
+
 def dirBruter(args, extensions=None):
-    userAgent = random.choice(userAgents)
     raw_url = args.url
     last_char = raw_url[-1]
     if last_char == '/':
@@ -80,7 +84,7 @@ def dirBruter(args, extensions=None):
     words = queue.Queue()
     for word in wordlist:
         word = word.rstrip()
-        words.put(word) 
+        words.put(word)
     found_url = []
     while not words.empty():
         attempt = words.get()
@@ -94,55 +98,60 @@ def dirBruter(args, extensions=None):
                 attempt_list.append(f"/{attempt}{extension}")
         for brute in attempt_list:
             try:
-                
+
                 target_url = f"{url}{brute}"
-                headers = {"User-Agent": f"{random.choice(userAgents)}"}
+                headers = {"User-Agent": f"{random.choice(user_agents)}"}
                 response = requests.get(target_url, headers=headers, timeout=5)
                 if response.status_code == 200:
                     if args.output:
                         save_found_results(target_url)
                     found_url.append(target_url)
-                    print(f"{white}[{green}{response.status_code}{white}] FOUND | {green}{target_url}{white}")
-                    
+                    print(f"{white}[{green}FOUND{white}] {response.status_code}: {green}{target_url}{reset}")
+
                 elif response.status_code == 404:
                     if args.verbose:
-                    	print(f"{white}[{red}{response.status_code}{white}] NOT FOUND | {red}{target_url}{reset}")
-                    else:
-                    	pass
-                else:
-                    if args.verbose:
-                    	print(f"{white}[{blue}{response.status_code}{white}] | {blue}{target_url}{reset}")
+                        print(f"{white}[{red}NOT FOUND{white}] {response.status_code}: {red}{target_url}{reset}")
                     else:
                         pass
-                
+                else:
+                    if args.verbose:
+                        print(f"{white}[{blue}UNKNOWN{white}] {response.status_code}: {blue}{target_url}{reset}")
+                    else:
+                        pass
+
             except requests.Timeout:
                 if args.verbose:
-                	print(f"{white}[{yellow}!{white}] Request Timeout | {yellow}{target_url}{reset}")
-                	
+                    print(f"{white}[{yellow}TIMEOUT{white}] Request timed out: {yellow}{target_url}{reset}")
+
             except Exception as e:
-            	if args.verbose:
-            		print(f"{white}[{red}!{white}] An error occured: {red}{e}{reset}")
+                if args.verbose:
+                    print(f"{white}[{red}ERROR{white}] An error occurred: {red}{e}{reset}")
 
 
-
-parser = argparse.ArgumentParser(description=f'{white}DirBruter — by Vijay Sahu | {green}https://github.com/vijaysahuofficial{reset}',epilog=f'{white}DirBruter is a Python based CLI tool that looks for hidden or existing directories/files using brute force method. It basically works by launching a dictionary based attack against a webserver and analyze its response.{reset}')
-parser.add_argument('-t', '--threads',type=int, help='number of threads (default is 1)', metavar='<threads>', default=1)
+parser = argparse.ArgumentParser(
+    description=f'{white}DirBruter — by Vijay Sahu | {green}https://github.com/vijaysahuofficial{reset}',
+    epilog=f'{white}DirBruter is a Python based CLI tool that looks for hidden or existing directories/files using brute force method. It basically works by launching a dictionary based attack against a webserver and analyze its response.{reset}')
+parser.add_argument('-t', '--threads', type=int, help='number of threads (default is 1)', metavar='<threads>',
+                    default=1)
 parser.add_argument('-u', '--url', type=str, help='target url', metavar='<url>', required=True)
-parser.add_argument('-w', '--wordlist', help="wordlist file/path to wordlist",metavar='<wordlist>', required=True, type=lambda x:valid_wordlist(parser,x))
-parser.add_argument('-o', '--output', help='save found results to a file',action='store_true')
+parser.add_argument('-w', '--wordlist', help="wordlist file/path to wordlist", metavar='<wordlist>', required=True,
+                    type=lambda x: valid_wordlist(parser, x))
+parser.add_argument('-o', '--output', help='save found results to a file', action='store_true')
 parser.add_argument('-v', '--verbose', help='verbose output (show network logs/errors)', action='store_true')
 parser.add_argument('-e', '--extensions', help='extensions (example ".php,.exe,.bak")', metavar='<extensions>')
 args = parser.parse_args()
 if __name__ == '__main__':
     try:
-    	print(f"{white}> Target: {green}{args.url}{reset}")
-    	print(f"{white}-{reset}"*41)
-    	main(args)
+        print(f"{white}> Target: {green}{args.url}{reset}")
+        print(f"{white}-{reset}" * 41)
+        main(args)
     except KeyboardInterrupt:
         if args.verbose:
-            print(f"{white}[{red}!{white}] Exiting...{reset}");time.sleep(1);sys.exit(1)
+            print(f"{white}[{red}CTRLC{white}] Exiting...{reset}")
+            time.sleep(1)
+            sys.exit(1)
         sys.exit(1)
-            
+
     except Exception as e:
         if args.verbose:
-            print(f"{white}[{red}!{white}] An error occured: {red}{e}{reset}")
+            print(f"{white}[{red}ERROR{white}] An error occurred: {red}{e}{reset}")
