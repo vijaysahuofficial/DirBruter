@@ -7,6 +7,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/vijaysahuofficial/DirBruter?style=for-the-badge)
 [![GitHub forks](https://img.shields.io/github/forks/vijaysahuofficial/DirBruter?style=for-the-badge)](https://github.com/vijaysahuofficial/DirBruter/network)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/vijaysahuofficial/DirBruter?include_prereleases&style=for-the-badge)[![GitHub stars](https://img.shields.io/github/stars/vijaysahuofficial/DirBruter?style=for-the-badge)](https://github.com/vijaysahuofficial/DirBruter/stargazers)
+
 *DirBruter is a Python based CLI tool. It looks for hidden or existing directories/files using brute force method. It basically works by launching a dictionary based attack against a webserver and analyse its response.*
 
 # INSTALLATION
