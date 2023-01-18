@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 certifi==2021.5.30
 charset-normalizer==2.0.4
 colorama==0.4.4
@@ -6,3 +7,6 @@ idna==3.2
 pyfiglet==0.8.post1
 requests==2.26.0
 urllib3==1.26.6
+=======
+requests
+>>>>>>> d0367bba6408abc999a5530394e2c0165bf91ed6
