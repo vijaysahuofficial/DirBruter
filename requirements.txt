@@ -1,7 +1,7 @@
 certifi==2021.5.30
 charset-normalizer==2.0.4
 colorama==0.4.4
-fake-useragent==0.1.11
+fake-useragent
 idna==3.2
 pyfiglet==0.8.post1
 requests==2.26.0
