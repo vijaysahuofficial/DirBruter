@@ -1,15 +1,37 @@
-import sys
-import time
+import argparse
+import asyncio
+import logging
 import os
 import random
-import argparse
-import aiohttp
-import asyncio
-from resources.banner import banner
-from resources.useragents import user_agents
-from resources.colors import red, white, green, blue, yellow, reset
+import sys
+import time
 
-print(banner)
+import aiohttp
+import pyfiglet
+from rich import print
+from rich.logging import RichHandler
+
+from resources.colors import white, green, reset
+from resources.useragents import user_agents
+
+print(f"[red]{pyfiglet.figlet_format('Dir Bruter')}[/]")
+
+
+def set_loglevel(debug_mode: bool) -> logging.getLogger:
+    """
+    Configure and return a logging object with the specified log level.
+
+    :param debug_mode: If True, the log level is set to "NOTSET". Otherwise, it is set to "INFO".
+    :return: A logging object configured with the specified log level.
+    """
+    logging.basicConfig(
+        level="NOTSET" if debug_mode else "INFO",
+        format="%(message)s",
+        handlers=[
+            RichHandler(markup=True, log_time_format="%H:%M:%S", show_level=debug_mode)
+        ],
+    )
+    return logging.getLogger("Tor2Tor")
 
 
 async def fetch(session, url, headers):
@@ -25,11 +47,10 @@ async def fetch(session, url, headers):
         return await response.text(), response.status
 
 
-async def dir_bruter(args, wordlist, extensions=None):
+async def dir_bruter(wordlist, extensions=None):
     """
     Brute force directories and files.
 
-    :param args: Command-line arguments
     :param wordlist: List of words to brute force
     :param extensions: File extensions to check, defaults to None
     """
@@ -49,34 +70,33 @@ async def dir_bruter(args, wordlist, extensions=None):
                 try:
                     _, status = await fetch(session, target_url, headers)
                     if status == 200:
-                        print(f"{white}[{green}FOUND{white}] {status}: {green}{target_url}{reset}")
+                        log.info(
+                            f"[bold][green]Available[/][/] [{status}]: {target_url}"
+                        )
                         if args.output:
                             save_found_results(target_url)
-                    elif args.verbose:
-                        if status == 404:
-                            print(f"{white}[{red}NOT FOUND{white}] {status}: {red}{target_url}{reset}")
-                        else:
-                            print(f"{white}[{blue}UNKNOWN{white}] {status}: {blue}{target_url}{reset}")
+                    else:
+                        log.info(
+                            f"[bold][yellow]Unavailable[/][/] [{status}]: {target_url}"
+                        )
 
-                except:
-                    if args.verbose:
-                        print(f"{white}[{yellow}TIMEOUT{white}] Request timed out: {yellow}{target_url}{reset}")
+                except Exception as e:
+                    log.critical(f"{target_url}: [red]{e}[/]")
 
 
-def valid_wordlist(parser, args):
+def is_valid_wordlist(wordlist: str):
     """
     Validate wordlist file path.
 
-    :param parser: ArgumentParser object
-    :param args: Wordlist file path
+    :param wordlist: Wordlist file path
     :return: List of words from the wordlist
     """
-    if not os.path.exists(args):
-        print(f"{white}[{red}WARNING{white}] The file {green}{args}{white} does not exist{reset}")
+    if not os.path.exists(wordlist):
+        log.warning(f"The file {wordlist} does not exist.")
         sys.exit(1)
     else:
-        print(f"{white}> Wordlist: {green}{args}{reset}")
-        with open(args, 'r') as f:
+        print(f"[[green]+[/]] Wordlist: {wordlist}")
+        with open(wordlist, "r") as f:
             return f.readlines()
 
 
@@ -88,41 +108,59 @@ def save_found_results(target_url):
     """
     ts = time.localtime()
     timestamp = time.strftime("%H:%M:%S", ts)
-    with open('dB_output.txt', 'a') as f:
-        f.write(f'[{timestamp}] : {target_url}\n')
+    with open("dB_output.txt", "a") as f:
+        f.write(f"[{timestamp}] : {target_url}\n")
 
 
-def main():
+if __name__ == "__main__":
     """Main function to parse arguments and run the brute forcer."""
     # Argument parser setup
     parser = argparse.ArgumentParser(
-        description=f'{white}DirBruter — by Vijay Sahu | {green}https://github.com/vijaysahuofficial{reset}',
-        epilog=f'{white}DirBruter is a Python-based CLI tool that looks for hidden or existing directories/files using the brute force method. It basically works by launching a dictionary-based attack against a webserver and analyzing its response.{reset}')
+        description=f"{white}DirBruter — by Vijay Sahu | {green}https://github.com/vijaysahuofficial{reset}",
+        epilog=f"{white}DirBruter is a Python-based CLI tool that looks for hidden or existing directories/files "
+        f"using the brute force method. It basically works by launching a dictionary-based attack against a "
+        f"webserver and analyzing its response.{reset}",
+    )
 
-    parser.add_argument('-t', '--threads', type=int, help='Number of threads (Async so no longer relevant)',
-                        default=1)
-    parser.add_argument('-u', '--url', type=str, help='Target URL', metavar='<url>', required=True)
-    parser.add_argument('-w', '--wordlist', type=lambda x: valid_wordlist(parser, x),
-                        help='Path to wordlist', metavar='<wordlist>', required=True)
-    parser.add_argument('-o', '--output', help='Save found results to a file', action='store_true')
-    parser.add_argument('-v', '--verbose', help='Verbose output (show network logs/errors)', action='store_true')
-    parser.add_argument('-e', '--extensions', help='Extensions (example ".php,.exe,.bak")', metavar='<extensions>')
+    parser.add_argument("url", type=str, help="Target URL")
+    parser.add_argument(
+        "-w",
+        "--wordlist",
+        type=lambda wordlist: is_valid_wordlist(wordlist=wordlist),
+        help="Path to wordlist",
+        metavar="<wordlist>",
+        required=True,
+    )
+    parser.add_argument(
+        "-o", "--output", help="Save found results to a file", action="store_true"
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        help="run in debug mode",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-e",
+        "--extensions",
+        help='Extensions (example ".php,.exe,.bak")',
+        metavar="<extensions>",
+    )
 
     args = parser.parse_args()
-    extensions = args.extensions.split(',') if args.extensions else None
+    log = set_loglevel(debug_mode=args.debug)
+    extensions = args.extensions.split(",") if args.extensions else None
 
-    print(f"{white}> Target: {green}{args.url}{reset}")
-    print(f"{white}-{reset}" * 41)
+    print(f"[[green]+[/]] Target: {args.url}")
+    print(f"-" * 41)
 
-    # Start asynchronous loop
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(dir_bruter(args, args.wordlist, extensions))
-
-
-if __name__ == '__main__':
     try:
-        main()
+        # Start asynchronous loop
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(
+            dir_bruter(wordlist=args.wordlist, extensions=extensions)
+        )
     except KeyboardInterrupt:
-        print(f"{white}[{red}CTRLC{white}] Exiting...{reset}")
+        log.warning("User interruption detected ([yellow]Ctrl+C[/])")
     except Exception as e:
-        print(f"{white}[{red}ERROR{white}] An error occurred: {red}{e}{reset}")
+        log.error(f"An error occurred: [red]{e}[/]")
