@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 # Usage
 ```
-python dirbruter.py -u http://testphp.vulnweb.com -w DBwordlist.txt
+python dirbruter.py --help
 ```
 ```
  ____  _        ____             _            
@@ -58,7 +58,7 @@ webserver and analyzing its response
 
 ```
 
-# DISCLAIMER
+# Disclaimer
 
 *This Tool is made for educational purpose, and should not be used in environments without legal authorization. The author will not be responsible for any misuse of this toolkit.*
 
