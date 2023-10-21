@@ -69,14 +69,12 @@ async def dir_bruter(wordlist, extensions=None):
                 try:
                     _, status = await fetch(session, target_url, headers)
                     if status == 200:
-                        log.info(
-                            f"[bold][green]Available[/][/] [{status}]: {target_url}"
-                        )
+                        log.info(f"[bold][green]Found[/][/] [{status}]: {target_url}")
                         if args.output:
                             save_found_results(target_url)
                     else:
                         log.info(
-                            f"[bold][yellow]Unavailable[/][/] [{status}]: {target_url}"
+                            f"[bold][yellow]Not Found[/][/] [{status}]: {target_url}"
                         )
 
                 except Exception as e:
