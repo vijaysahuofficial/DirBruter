@@ -11,7 +11,6 @@ import pyfiglet
 from rich import print
 from rich.logging import RichHandler
 
-from resources.colors import white, green, reset
 from resources.useragents import user_agents
 
 print(f"[red]{pyfiglet.figlet_format('Dir Bruter')}[/]")
@@ -116,10 +115,10 @@ if __name__ == "__main__":
     """Main function to parse arguments and run the brute forcer."""
     # Argument parser setup
     parser = argparse.ArgumentParser(
-        description=f"{white}DirBruter — by Vijay Sahu | {green}https://github.com/vijaysahuofficial{reset}",
-        epilog=f"{white}DirBruter is a Python-based CLI tool that looks for hidden or existing directories/files "
+        description=f"DirBruter — https://github.com/rly0nheart",
+        epilog=f"DirBruter is a Python-based CLI tool that looks for hidden or existing directories/files "
         f"using the brute force method. It basically works by launching a dictionary-based attack against a "
-        f"webserver and analyzing its response.{reset}",
+        f"webserver and analyzing its response",
     )
 
     parser.add_argument("url", type=str, help="Target URL")
