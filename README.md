@@ -26,16 +26,8 @@ pip install -r requirements.txt
 
 
 # Usage
-
-**Linux**
 ```
-python dirbruter.py -u "http://testphp.vulnweb.com" -w DBwordlist.txt
-```
-
-**Windows**
-
-```
-python dirbruter.py -u "http://testphp.vulnweb.com" -w "DBwordlist.txt"
+python dirbruter.py -u http://testphp.vulnweb.com -w DBwordlist.txt
 ```
 ```
  ____  _        ____             _            
