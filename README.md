@@ -8,6 +8,9 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/rly0nheart/DirBruter?style=flat&logo=github)
 [![GitHub forks](https://img.shields.io/github/forks/rly0nheart/DirBruter?style=flat&logo=github)](https://github.com/rly0nheart/DirBruter/network)
 [![GitHub stars](https://img.shields.io/github/stars/rly0nheart/DirBruter?style=flat&logo=github)](https://github.com/rly0nheart/DirBruter/stargazers)
+
+![Screenshot from 2023-10-21 02-46-04](https://github.com/rly0nheart/DirBruter/assets/74001397/93f61879-070e-48ec-be4d-6ee801f42389)
+
 ***
 
 # Installation
